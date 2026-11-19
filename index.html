@@ -55,7 +55,7 @@ td.num,th.num{text-align:right;white-space:nowrap}
 .chip{display:inline-block;border:1.5px solid #111;border-radius:999px;padding:0 7px;margin:1px 3px 1px 0;font-size:12px;white-space:nowrap;background:#fff}
 .chip.g권장{background:#fff4c2}.chip.g신간{background:#d7f5df}.chip.g진로{background:#dfe9ff}.chip.g희망{background:#ffe0f0}
 .chip.dm{background:#ffd6d6;border-color:var(--red)}
-.qty{width:52px}
+input.qty{width:56px;padding:3px 5px}
 .cover{width:34px;height:48px;object-fit:cover;border:1px solid #999;background:#eee}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
 .status{font-size:13px;font-weight:700}
@@ -408,7 +408,7 @@ function render() {
   $("listTable").innerHTML = `<thead><tr><th>순번</th><th class="hide-m"></th><th>도서명</th><th>저자</th><th>출판사</th><th class="num">출간</th><th class="num">정가</th><th>권수</th><th class="hide-m">분야</th><th>근거</th><th>독서로</th><th></th></tr></thead><tbody>` +
     L.map((r, i) => { const b = r.b, x = r.x;
       const st = x.st === "ok" ? `<span class="status st-ok">없음 ✓</span>` : x.st === "bad" ? `<span class="status st-bad">있음: ${esc(x.stx || "")}</span>` : x.st === "err" ? `<span class="status st-wait">확인 못함</span>` : (b.lib ? `<span class="status st-bad" title="다른 권이 학교에 있음">${esc(b.lib)}</span>` : `<span class="status st-wait">-</span>`);
-      return `<tr class="${x.st === "bad" ? "bad" : ""}"><td class="num">${i + 1}</td><td class="hide-m">${b.cv ? `<img class="cover" loading="lazy" src="${esc(b.cv)}" alt="">` : ""}</td>
+      return `<tr class="${x.st === "bad" ? "bad" : ""}"><td class="num">${i + 1}</td><td class="hide-m">${b.cv ? `<img class="cover" loading="lazy" referrerpolicy="no-referrer" src="${esc(b.cv)}" alt="" onerror="this.remove()">` : ""}</td>
       <td><a class="t" href="${aladin(b)}" target="_blank" rel="noopener">${esc(shown(b.t))}</a>${b.s ? `<span class="s">${esc(b.s)}</span>` : ""}</td><td>${esc(b.a)}</td><td>${esc(b.p)}</td><td class="num">${b.y || ""}</td><td class="num">${won(b.pr)}</td>
       <td><input class="qty" type="number" min="1" value="${x.q || 1}" data-i="${i}"></td><td class="hide-m">${esc(b.f)}</td><td>${chips(b)}</td><td>${st}</td>
       <td><button class="sm" data-rep="${i}">바꾸기</button> <button class="sm red" data-del="${i}" title="이 책을 목록에서 빼고 다음에도 고르지 않음">빼기</button></td></tr>`; }).join("") + "</tbody>";
@@ -456,7 +456,7 @@ async function doSearch() {
     if (!L.length) { $("searchRes").innerHTML = '<p class="note">찾은 책이 없습니다.</p>'; return; }
     const h = await relay({ a: "hold", items: L.map(x => ({ t: x.t, a: firstAuthor(x.a), isbn: "" })) });
     $("searchRes").innerHTML = L.map((x, i) => { const hh = h.ok ? h.list[i] : null; const have = hh && hh.found && hh.how !== "다른 권";
-      return `<div class="item">${x.cover ? `<img class="cover" src="${esc(x.cover)}" alt="">` : ""}<div style="flex:1"><b>${esc(x.t)}</b>${x.sub ? ` <span class="muted">${esc(x.sub)}</span>` : ""}<br><span class="note">${esc(firstAuthor(x.a))} · ${esc(x.p)} · ${esc(x.date)} · 정가 ${won(x.price)}원${x.out ? ' · <span class="warn">절판·품절</span>' : ""}</span></div>
+      return `<div class="item">${x.cover ? `<img class="cover" referrerpolicy="no-referrer" src="${esc(x.cover)}" alt="" onerror="this.remove()">` : ""}<div style="flex:1"><b>${esc(x.t)}</b>${x.sub ? ` <span class="muted">${esc(x.sub)}</span>` : ""}<br><span class="note">${esc(firstAuthor(x.a))} · ${esc(x.p)} · ${esc(x.date)} · 정가 ${won(x.price)}원${x.out ? ' · <span class="warn">절판·품절</span>' : ""}</span></div>
       <div>${have ? `<span class="status st-bad">학교에 있음 ${esc(hh.callNo)}</span>` : hh && hh.ok ? `<span class="status st-ok">학교에 없음</span>` : ""}</div><button class="sm" data-add="${i}">${have ? "그래도 넣기" : "목록에 넣기"}</button></div>`; }).join("");
     $("searchRes").querySelectorAll("[data-add]").forEach(btn => btn.onclick = async () => {
       const x = L[+btn.dataset.add]; btn.disabled = true; btn.textContent = "넣는 중…";
