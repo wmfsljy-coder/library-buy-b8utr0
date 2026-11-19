@@ -108,7 +108,7 @@ input.qty{width:56px;padding:3px 5px}
         <tr><td><span class="chip g진로">진로</span> 진로·직업 책</td><td><input type="number" id="r진로" value="15" min="0" max="100">%</td></tr>
       </table>
       <p class="note" id="ratioNote"></p>
-      <label><input type="checkbox" id="demandFirst" checked> 웅천서가에서 학생들이 글을 쓴 책(도서관에 없는 책) 먼저 넣기</label>
+      <p class="note">웅천서가에서 학생들이 이미 읽고 글을 쓴 책은 우선순위를 주지 않습니다.</p>
     </div>
     <div class="panel">
       <h2>3. 분야 균형(%)</h2>
@@ -160,7 +160,7 @@ input.qty{width:56px;padding:3px 5px}
       <select id="bg"><option value="">묶음 전체</option><option>권장</option><option>신간</option><option>진로</option></select>
       <select id="bf"><option value="">분야 전체</option></select>
       <select id="bs"><option value="sc">점수 높은 순</option><option value="y">최근 출간 순</option><option value="sp">인기(판매) 순</option><option value="pr">정가 낮은 순</option></select>
-      <label><input type="checkbox" id="bDemand"> 학생 글 있는 책만</label>
+      <label><input type="checkbox" id="bDemand"> 웅천서가에서 읽은 책만</label>
       <span class="note" id="bCount"></span>
     </div>
   </div>
@@ -189,7 +189,8 @@ input.qty{width:56px;padding:3px 5px}
       <li>추천 목록에 겹쳐 오를수록 +12(최대 3곳), 청소년 대상 목록이면 +8, 경남교육청 추천이면 +6</li>
       <li>많이 읽히는 정도(알라딘 판매 지수 백분위) 최대 +30, 리뷰 수 최대 +8</li>
       <li>최근 출간: 2025년 이후 +14, 2023~24년 +10, 2020~22년 +6, 2015~19년 +2</li>
-      <li>청소년 분야 책 +8, 웅천서가에 학생 글이 있는 책 1건당 +10(최대 +20)</li>
+      <li>청소년 분야 책 +8</li>
+      <li>웅천서가에서 학생들이 이미 읽고 글을 쓴 책은 가산점도 먼저 넣기도 없습니다. 추천 목록에 없고 웅천서가 글만 있던 책은 후보에서 뺽니다.</li>
       <li>정가 3만 5천 원 초과 −8(5만 원 초과 −15), 600쪽 넘는 책 −4, 만화 −5, 청소년 분야도 청소년 대상 목록도 아닌 일반 성인 대상 책 −6</li>
       <li>목록은 분야 차례로, 같은 분야 안에서는 점수 순으로 보여 줍니다(직접 넣은 책은 맨 위).</li>
     </ul>
@@ -254,7 +255,7 @@ fetch("data/books.json", { cache: "no-cache" }).then(r => r.json()).then(d => {
 }).catch(e => { $("metaLine").innerHTML = '<span class="warn">자료를 불러오지 못했습니다. 새로고침해 주세요.</span>'; });
 
 /* ---------- 설정 ---------- */
-const SET_IDS = ["nBooks","budget","fitBudget","year","round","r권장","r신간","r진로","demandFirst","maxPrice","minYear","maxAuthor","optComic","optRelig","optSeries"];
+const SET_IDS = ["nBooks","budget","fitBudget","year","round","r권장","r신간","r진로","maxPrice","minYear","maxAuthor","optComic","optRelig","optSeries"];
 function saveSettings() { const o = {}; SET_IDS.forEach(id => { const el = $(id); o[id] = el.type === "checkbox" ? el.checked : el.value; }); AREAS.forEach(([a]) => { const el = $("w_" + a); if (el) o["w_" + a] = el.value; }); localStorage.setItem(LS("set"), JSON.stringify(o)); }
 function loadSettings() { let o = {}; try { o = JSON.parse(localStorage.getItem(LS("set")) || "{}"); } catch (e) {} SET_IDS.forEach(id => { if (o[id] == null) return; const el = $(id); if (el.type === "checkbox") el.checked = !!o[id]; else el.value = o[id]; }); loadSettings.o = o; ratioNote(); }
 function buildAreaTable() {
@@ -311,7 +312,7 @@ function opts() {
   const ws = AREAS.map(([a]) => Math.max(0, Number($("w_" + a).value) || 0)); const wsum = ws.reduce((a, b) => a + b, 0) || 1;
   return { n, ratio: Object.fromEntries(GROUPS.map((g, i) => [g, rs[i] / rsum])), w: Object.fromEntries(AREAS.map(([a], i) => [a, ws[i] / wsum])),
     budget: Number($("budget").value) || 0, fit: $("fitBudget").checked, maxPrice: Number($("maxPrice").value) || 0, minYear: Number($("minYear").value) || 0,
-    maxAuthor: Math.max(1, Number($("maxAuthor").value) || 2), comic: $("optComic").checked, relig: $("optRelig").checked, series: $("optSeries").checked, demand: $("demandFirst").checked };
+    maxAuthor: Math.max(1, Number($("maxAuthor").value) || 2), comic: $("optComic").checked, relig: $("optRelig").checked, series: $("optSeries").checked };
 }
 function eligible(b, o) {
   if (!b.pr || excl.has(b.k) || prevHit(b)) return false;
@@ -353,7 +354,6 @@ function generate(seed) {
     return true;
   }
   keep.forEach(b => { if (picked.length < o.n && !got.has(b.k)) take(b, "pin"); });
-  if (o.demand) { const lim = Math.max(1, Math.round(o.n * 0.1)); pool.filter(b => b.dm > 0).slice(0, lim).forEach(b => { if (picked.length < o.n && can(b, false, false)) take(b, "dm"); }); }
   const order = ["진로", "신간", "권장"];
   for (const pass of [[true, true], [false, true]]) for (const g of order) for (const b of pool) { if (picked.length >= o.n) break; if (b.g === g && can(b, pass[0], pass[1])) take(b, ""); }
   for (const pass of [true, false]) for (const b of pool) { if (picked.length >= o.n) break; if (can(b, pass, false)) take(b, ""); }
@@ -385,7 +385,7 @@ function removeAt(i, permanent) {
 /* ---------- 그리기 ---------- */
 function chips(b) {
   const out = [`<span class="chip g${b.g}">${b.g}</span>`];
-  if (b.dm) out.push(`<span class="chip dm">웅천서가 학생 글 ${b.dm}건</span>`);
+  if (b.dm) out.push(`<span class="chip" title="우선순위에는 넣지 않음">웅천서가에서 읽음 ${b.dm}건</span>`);
   const src = (b.src || []).filter(s => !/웅천서가/.test(s)).map(s => s.replace("대한출판문화협회 올해의 청소년 도서", "올해의 청소년 도서").replace("한국출판문화산업진흥원 청소년권장도서", "청소년권장도서").replace("독서로 기관추천", "교육청 추천").replace("국립중앙도서관 사서추천", "국중도 사서추천").replace("알라딘 청소년 분야 인기 신간", "청소년 인기 신간").replace("학교도서관저널 도서추천위원회가 선정한 추천도서", "학교도서관저널"));
   src.slice(0, 3).forEach(s => out.push(`<span class="chip">${esc(s)}</span>`));
   if (src.length > 3) out.push(`<span class="chip" title="${esc(src.slice(3).join(", "))}">+${src.length - 3}</span>`);
@@ -527,7 +527,7 @@ function buildReview() {
   const crit = [["선정 기준"], ["후보", "독서로 웅천고 장서와 ISBN·서명·지은이로 대조해 학교에 없는 책만"], ["묶음", "권장(청소년 권장·추천 목록) / 신간(2025년 이후, 추천 목록 또는 청소년 분야 인기) / 진로(진로·직업)"],
     ["비율", GROUPS.map(g => g + " " + $("r" + g).value + "%").join(", ")], ["분야", AREAS.map(([a]) => a + " " + $("w_" + a).value + "%").join(", ")],
     ["거르기", `정가 ${won($("maxPrice").value)}원 이하, 권장도서 ${$("minYear").value}년 이후 출간, 한 지은이 최대 ${$("maxAuthor").value}권` + ($("optRelig").checked ? ", 종교·주식투자 제외" : "") + ($("optComic").checked ? "" : ", 만화 제외")],
-    ["점수", "추천 목록 수·청소년 대상 목록·경남교육청 추천·판매 지수·리뷰 수·최근 출간·청소년 분야·웅천서가 학생 글"],
+    ["점수", "추천 목록 수·청소년 대상 목록·경남교육청 추천·판매 지수·리뷰 수·최근 출간·청소년 분야(웅천서가에서 읽은 책은 가산점 없음)"],
     ["유의", "구입 전 유해간행물 목록(kpec.or.kr) 확인, 학교 홈페이지 7일 이상 게시, 학교도서관운영위원회 심의"], ["예산", "정가 기준(정가 × 권수, 할인 미반영)" + (Number($("budget").value) ? ", 상한 " + won($("budget").value) + "원" : "")], ["자료 기준일", DATA.meta.built]];
   const ws3 = XLSX.utils.aoa_to_sheet(crit); ws3["!cols"] = [{ wch: 14 }, { wch: 110 }];
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "검토용 목록"); XLSX.utils.book_append_sheet(wb, ws2, "분야·묶음 요약"); XLSX.utils.book_append_sheet(wb, ws3, "선정 기준");
