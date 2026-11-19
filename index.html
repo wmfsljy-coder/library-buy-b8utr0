@@ -57,6 +57,8 @@ input[type=text]:focus,select:focus{border-color:var(--navy2);box-shadow:0 0 0 3
 input[type=checkbox]{accent-color:var(--navy);width:17px;height:17px;vertical-align:-3px;margin:0 6px 0 0}
 .check{display:flex;align-items:flex-start;gap:2px;padding:6px 0;font-weight:600;cursor:pointer}
 .note{font-size:13.5px;color:var(--ink2)}
+.bsay{font-size:13.5px;font-weight:800;color:var(--navy);min-height:20px;margin-top:-2px}
+.bsay:empty{display:none}
 .hint{margin:14px 0 0;padding:10px 14px;background:var(--navyBg);border-radius:10px;font-size:13.5px;color:var(--ink)}
 .warn{color:var(--red);font-weight:700}
 .ok{color:var(--green);font-weight:700}
@@ -167,7 +169,7 @@ input.qty{width:58px;height:32px;border:1.5px solid var(--line);border-radius:8p
     <div class="ph"><span class="n">1</span><h2>몇 권을 살까요?</h2></div>
     <div class="row">
       <div class="fld"><span class="lb">권수</span><span class="ig hero"><input id="nBooks" type="number" min="1" max="2000" value="100"><span class="u">권</span></span></div>
-      <div class="fld"><span class="lb">예산 상한 · 정가 기준(선택)</span><span class="ig"><input id="budget" type="number" min="0" step="10000" placeholder="예: 1700000" style="width:150px"><span class="u">원</span></span></div>
+      <div class="fld"><span class="lb">예산 상한 · 정가 기준(선택)</span><span class="ig"><input id="budget" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 1,700,000" style="width:170px;text-align:right"><span class="u">원</span></span><span class="bsay" id="budgetSay"></span></div>
       <label class="check" style="padding-bottom:10px"><input type="checkbox" id="fitBudget">정가 합계가 예산을 넘지 않게 고르기</label>
     </div>
     <div class="row" style="margin-top:14px">
@@ -340,8 +342,11 @@ fetch("data/books.json", { cache: "no-cache" }).then(r => r.json()).then(d => {
 
 /* ---------- 설정 ---------- */
 const SET_IDS = ["nBooks","budget","fitBudget","year","round","r권장","r신간","r진로","demandFirst","maxPrice","minYear","maxAuthor","optComic","optRelig","optSeries"];
+function budgetVal() { return Number(S($("budget").value).replace(/[^\d]/g, "")) || 0; }
+function korWon(n) { if (!n) return ""; const eok = Math.floor(n / 1e8), man = Math.floor((n % 1e8) / 1e4), rest = n % 1e4; const p = []; if (eok) p.push(won(eok) + "억"); if (man) p.push(won(man) + "만"); if (rest) p.push(won(rest)); return p.join(" ") + (rest ? "원" : " 원"); }
+function showBudget() { const el = $("budget"), v = budgetVal(); el.value = v ? won(v) : ""; $("budgetSay").textContent = v ? `총 ${won(v)}원 (${korWon(v)})` : ""; }
 function saveSettings() { const o = {}; SET_IDS.forEach(id => { const el = $(id); o[id] = el.type === "checkbox" ? el.checked : el.value; }); AREAS.forEach(([a]) => { const el = $("w_" + a); if (el) o["w_" + a] = el.value; }); localStorage.setItem(LS("set"), JSON.stringify(o)); }
-function loadSettings() { let o = {}; try { o = JSON.parse(localStorage.getItem(LS("set")) || "{}"); } catch (e) {} SET_IDS.forEach(id => { if (o[id] == null) return; const el = $(id); if (el.type === "checkbox") el.checked = !!o[id]; else el.value = o[id]; }); loadSettings.o = o; ratioNote(); }
+function loadSettings() { let o = {}; try { o = JSON.parse(localStorage.getItem(LS("set")) || "{}"); } catch (e) {} SET_IDS.forEach(id => { if (o[id] == null) return; const el = $(id); if (el.type === "checkbox") el.checked = !!o[id]; else el.value = o[id]; }); loadSettings.o = o; ratioNote(); showBudget(); }
 function buildAreaTable() {
   const o = loadSettings.o || {};
   $("areaTable").innerHTML = AREAS.map(([a, w]) => `<div class="ar"><span class="nm">${a}<span class="cnt" id="wc_${a}"></span></span><span class="ig sm"><input type="number" min="0" max="100" id="w_${a}" value="${o["w_" + a] != null ? o["w_" + a] : w}"><span class="u">%</span></span></div>`).join("") + `<div class="tot"><span>합계 <span id="wSum"></span></span><button class="sm" id="wReset">기본값으로</button></div>`;
@@ -355,6 +360,13 @@ function updTitle() { $("titlePreview").textContent = xlsxTitle(); }
 function xlsxTitle() { return `${S($("year").value) || "2027"}학년도 학교도서관 도서구입 예정 목록(${S($("round").value) || "1차"})`; }
 SET_IDS.forEach(id => $(id).addEventListener("change", () => { saveSettings(); ratioNote(); updTitle(); }));
 ["year","round"].forEach(id => $(id).addEventListener("input", updTitle));
+$("budget").addEventListener("input", e => {
+  const el = e.target, pos = el.selectionStart || 0, digitsBefore = el.value.slice(0, pos).replace(/[^\d]/g, "").length;
+  showBudget();
+  let i = 0, d = 0; while (i < el.value.length && d < digitsBefore) { if (/\d/.test(el.value[i])) d++; i++; }
+  try { el.setSelectionRange(i, i); } catch (err) {}
+  saveSettings(); if (state.list.length) render();
+});
 GROUPS.forEach(g => $("r" + g).addEventListener("input", ratioNote));
 
 /* ---------- 이미 산 목록 ---------- */
@@ -395,7 +407,7 @@ function opts() {
   const rs = GROUPS.map(g => Math.max(0, Number($("r" + g).value) || 0)); const rsum = rs.reduce((a, b) => a + b, 0) || 1;
   const ws = AREAS.map(([a]) => Math.max(0, Number($("w_" + a).value) || 0)); const wsum = ws.reduce((a, b) => a + b, 0) || 1;
   return { n, ratio: Object.fromEntries(GROUPS.map((g, i) => [g, rs[i] / rsum])), w: Object.fromEntries(AREAS.map(([a], i) => [a, ws[i] / wsum])),
-    budget: Number($("budget").value) || 0, fit: $("fitBudget").checked, maxPrice: Number($("maxPrice").value) || 0, minYear: Number($("minYear").value) || 0,
+    budget: budgetVal(), fit: $("fitBudget").checked, maxPrice: Number($("maxPrice").value) || 0, minYear: Number($("minYear").value) || 0,
     maxAuthor: Math.max(1, Number($("maxAuthor").value) || 2), comic: $("optComic").checked, relig: $("optRelig").checked, series: $("optSeries").checked, demand: $("demandFirst").checked };
 }
 function eligible(b, o) {
@@ -613,7 +625,7 @@ function buildReview() {
     ["비율", GROUPS.map(g => g + " " + $("r" + g).value + "%").join(", ")], ["분야", AREAS.map(([a]) => a + " " + $("w_" + a).value + "%").join(", ")],
     ["거르기", `정가 ${won($("maxPrice").value)}원 이하, 권장도서 ${$("minYear").value}년 이후 출간, 한 지은이 최대 ${$("maxAuthor").value}권` + ($("optRelig").checked ? ", 종교·주식투자 제외" : "") + ($("optComic").checked ? "" : ", 만화 제외")],
     ["점수", "추천 목록 수·청소년 대상 목록·경남교육청 추천·판매 지수·리뷰 수·최근 출간·청소년 분야·웅천서가 학생 글"],
-    ["유의", "구입 전 유해간행물 목록(kpec.or.kr) 확인, 학교 홈페이지 7일 이상 게시, 학교도서관운영위원회 심의"], ["예산", "정가 기준(정가 × 권수, 할인 미반영)" + (Number($("budget").value) ? ", 상한 " + won($("budget").value) + "원" : "")], ["자료 기준일", DATA.meta.built]];
+    ["유의", "구입 전 유해간행물 목록(kpec.or.kr) 확인, 학교 홈페이지 7일 이상 게시, 학교도서관운영위원회 심의"], ["예산", "정가 기준(정가 × 권수, 할인 미반영)" + (budgetVal() ? ", 상한 " + won(budgetVal()) + "원" : "")], ["자료 기준일", DATA.meta.built]];
   const ws3 = XLSX.utils.aoa_to_sheet(crit); ws3["!cols"] = [{ wch: 14 }, { wch: 110 }];
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "검토용 목록"); XLSX.utils.book_append_sheet(wb, ws2, "분야·묶음 요약"); XLSX.utils.book_append_sheet(wb, ws3, "선정 기준");
   return wb;
