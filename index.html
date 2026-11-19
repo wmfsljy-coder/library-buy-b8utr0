@@ -88,15 +88,15 @@ input.qty{width:56px;padding:3px 5px}
     <h2>1. 몇 권을 살까요?</h2>
     <div class="row big">
       <label for="nBooks">권수</label><input id="nBooks" type="number" min="1" max="2000" value="100"> 권
-      <label for="budget">예산 상한(선택)</label><input id="budget" type="number" min="0" step="10000" placeholder="예: 1700000" style="width:150px"> 원
-      <label><input type="checkbox" id="fitBudget"> 예산을 넘지 않게 고르기</label>
+      <label for="budget">예산 상한(정가 기준, 선택)</label><input id="budget" type="number" min="0" step="10000" placeholder="예: 1700000" style="width:150px"> 원
+      <label><input type="checkbox" id="fitBudget"> 정가 합계가 예산을 넘지 않게 고르기</label>
     </div>
     <div class="row" style="margin-top:10px">
       <label for="year">학년도</label><input id="year" type="number" value="2027" style="width:90px">
       <label for="round">회차</label><input id="round" type="text" value="1학기 1차" style="width:140px">
       <span class="note">엑셀 제목: <b id="titlePreview"></b></span>
     </div>
-    <p class="note" style="margin:8px 0 0">한 해 예산 약 1,500만 원이면 정가 평균 약 1만 7천 원 기준 <b>연 850~900권</b> 정도입니다. 100권은 정가 합계 약 170만 원 안팎입니다.</p>
+    <p class="note" style="margin:8px 0 0">한 해 예산 약 1,500만 원이면 정가 평균 약 1만 7천 원 기준 <b>연 850~900권</b> 정도입니다. 100권은 정가 합계 약 170만 원 안팎입니다. <b>예산은 모두 정가 기준(정가 × 권수)</b>으로 계산하며 할인은 넣지 않습니다.</p>
   </div>
 
   <div class="grid3">
@@ -209,7 +209,7 @@ input.qty{width:56px;padding:3px 5px}
     </ol>
     <h3>6) 예산</h3>
     <ul>
-      <li>도서정가제로 학교도 정가의 10%까지만 할인됩니다. 화면의 ‘예상 결제액’은 정가 합계의 90%입니다.</li>
+      <li>예산은 <b>정가 기준</b>으로 작성합니다. 화면의 합계, 예산 남음·넘음, 품의용 엑셀의 합계 모두 정가 × 권수이며 할인은 계산에 넣지 않습니다.</li>
       <li>한 해 약 1,500만 원이면 연 4회(운영 계획서) 기준 회차당 약 370만 원, 약 210~220권입니다.</li>
     </ul>
     <p class="note" id="srcNote"></p>
@@ -398,8 +398,8 @@ function render() {
   const o = opts();
   const qsum = L.reduce((s, r) => s + (Number(r.x.q) || 1), 0), psum = L.reduce((s, r) => s + r.b.pr * (Number(r.x.q) || 1), 0);
   const bad = L.filter(r => r.x.st === "bad").length, checked = L.filter(r => r.x.st).length;
-  $("summary").innerHTML = `<div class="box">책<b>${L.length}종 ${qsum}권</b></div><div class="box">정가 합계<b>${won(psum)}원</b></div><div class="box">예상 결제액(10% 할인)<b>${won(Math.round(psum * 0.9))}원</b></div>`
-    + (o.budget ? `<div class="box">예산 ${won(o.budget)}원<b class="${psum > o.budget ? "warn" : "ok"}">${psum > o.budget ? won(psum - o.budget) + "원 넘음" : won(o.budget - psum) + "원 남음"}</b></div>` : "")
+  $("summary").innerHTML = `<div class="box">책<b>${L.length}종 ${qsum}권</b></div><div class="box">정가 합계<b>${won(psum)}원</b></div>`
+    + (o.budget ? `<div class="box">예산(정가 기준) ${won(o.budget)}원<b class="${psum > o.budget ? "warn" : "ok"}">${psum > o.budget ? won(psum - o.budget) + "원 넘음" : won(o.budget - psum) + "원 남음"}</b></div>` : "")
     + `<div class="box">독서로 확인<b class="${bad ? "warn" : checked === L.length && L.length ? "ok" : ""}">${checked ? (bad ? `있는 책 ${bad}권` : (checked === L.length ? "모두 없음 ✓" : `${checked}/${L.length}권 확인`)) : "아직 안 함"}</b></div>`;
   const ac = {}, gc = {}; L.forEach(r => { ac[r.b.f] = (ac[r.b.f] || 0) + 1; gc[r.b.g] = (gc[r.b.g] || 0) + 1; });
   $("bars").innerHTML = (L.length ? "<span><b>묶음</b></span>" + ["권장","신간","진로","희망"].filter(g => gc[g]).map(g => `<span>${g} <b>${gc[g]}</b></span>`).join("") + "<span>|</span><span><b>분야</b></span>" + AREAS.filter(([a]) => ac[a]).map(([a]) => `<span>${a} <b>${ac[a]}</b></span>`).join("") : "");
@@ -510,7 +510,7 @@ $("btnXlsx").onclick = () => {
 };
 function buildReview() {
   const L = rowsForExport();
-  const H = ["순번","도서명","부제","저자","출판사","출간연도","정가","권수","금액","분야","묶음","선정 근거","웅천서가 학생 글","독서로 확인","ISBN","알라딘"];
+  const H = ["순번","도서명","부제","저자","출판사","출간연도","정가","권수","금액(정가×권수)","분야","묶음","선정 근거","웅천서가 학생 글","독서로 확인","ISBN","알라딘"];
   const rows = L.map((r, i) => { const b = r.b, q = Number(r.x.q) || 1; return [i + 1, shown(b.t), b.s || "", b.a, b.p, b.y || "", b.pr, q, b.pr * q, b.f, b.g, (b.src || []).join("; "), b.dm || "", r.x.st === "ok" ? "없음" : r.x.st === "bad" ? "있음 " + (r.x.stx || "") : (b.lib || "확인 전"), b.isbn || "", aladin(b)]; });
   const ws = XLSX.utils.aoa_to_sheet([[xlsxTitle() + " — 검토용(운영위원회 사전 검토)"], [], H, ...rows]);
   const hs = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { patternType: "solid", fgColor: { rgb: "111111" } }, alignment: { horizontal: "center", vertical: "center", wrapText: true }, border };
@@ -519,16 +519,16 @@ function buildReview() {
   rows.forEach((row, i) => row.forEach((v, c) => { const a = XLSX.utils.encode_cell({ r: i + 3, c }); if (!ws[a]) return; ws[a].s = { border, alignment: { vertical: "top", wrapText: c === 11 || c === 1 }, ...(c === 6 || c === 8 ? { numFmt: "#,##0" } : {}) }; if (c === 6 || c === 8) ws[a].z = "#,##0"; }));
   ws["!cols"] = [6, 34, 24, 14, 14, 8, 9, 6, 10, 12, 7, 48, 8, 18, 15, 40].map(w => ({ wch: w }));
   ws["!autofilter"] = { ref: `A3:P${rows.length + 3}` };
-  const sumRows = [["분야","권수","금액"]]; const ac = {}; L.forEach(r => { const q = Number(r.x.q) || 1; ac[r.b.f] = ac[r.b.f] || [0, 0]; ac[r.b.f][0] += q; ac[r.b.f][1] += r.b.pr * q; });
+  const sumRows = [["분야","권수","정가 합계"]]; const ac = {}; L.forEach(r => { const q = Number(r.x.q) || 1; ac[r.b.f] = ac[r.b.f] || [0, 0]; ac[r.b.f][0] += q; ac[r.b.f][1] += r.b.pr * q; });
   Object.entries(ac).sort((a, b) => b[1][0] - a[1][0]).forEach(([k, v]) => sumRows.push([k, v[0], v[1]]));
   const gsum = {}; L.forEach(r => { const q = Number(r.x.q) || 1; gsum[r.b.g] = gsum[r.b.g] || [0, 0]; gsum[r.b.g][0] += q; gsum[r.b.g][1] += r.b.pr * q; });
-  sumRows.push([], ["묶음","권수","금액"]); Object.entries(gsum).forEach(([k, v]) => sumRows.push([k, v[0], v[1]]));
+  sumRows.push([], ["묶음","권수","정가 합계"]); Object.entries(gsum).forEach(([k, v]) => sumRows.push([k, v[0], v[1]]));
   const ws2 = XLSX.utils.aoa_to_sheet(sumRows); ws2["!cols"] = [{ wch: 16 }, { wch: 8 }, { wch: 14 }];
   const crit = [["선정 기준"], ["후보", "독서로 웅천고 장서와 ISBN·서명·지은이로 대조해 학교에 없는 책만"], ["묶음", "권장(청소년 권장·추천 목록) / 신간(2025년 이후, 추천 목록 또는 청소년 분야 인기) / 진로(진로·직업)"],
     ["비율", GROUPS.map(g => g + " " + $("r" + g).value + "%").join(", ")], ["분야", AREAS.map(([a]) => a + " " + $("w_" + a).value + "%").join(", ")],
     ["거르기", `정가 ${won($("maxPrice").value)}원 이하, 권장도서 ${$("minYear").value}년 이후 출간, 한 지은이 최대 ${$("maxAuthor").value}권` + ($("optRelig").checked ? ", 종교·주식투자 제외" : "") + ($("optComic").checked ? "" : ", 만화 제외")],
     ["점수", "추천 목록 수·청소년 대상 목록·경남교육청 추천·판매 지수·리뷰 수·최근 출간·청소년 분야·웅천서가 학생 글"],
-    ["유의", "구입 전 유해간행물 목록(kpec.or.kr) 확인, 학교 홈페이지 7일 이상 게시, 학교도서관운영위원회 심의"], ["자료 기준일", DATA.meta.built]];
+    ["유의", "구입 전 유해간행물 목록(kpec.or.kr) 확인, 학교 홈페이지 7일 이상 게시, 학교도서관운영위원회 심의"], ["예산", "정가 기준(정가 × 권수, 할인 미반영)" + (Number($("budget").value) ? ", 상한 " + won($("budget").value) + "원" : "")], ["자료 기준일", DATA.meta.built]];
   const ws3 = XLSX.utils.aoa_to_sheet(crit); ws3["!cols"] = [{ wch: 14 }, { wch: 110 }];
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "검토용 목록"); XLSX.utils.book_append_sheet(wb, ws2, "분야·묶음 요약"); XLSX.utils.book_append_sheet(wb, ws3, "선정 기준");
   return wb;
