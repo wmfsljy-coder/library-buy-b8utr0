@@ -5,128 +5,212 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>웅천고 도서관 구입 목록 도우미</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-:root{--ink:#111;--sub:#333;--line:#222;--soft:#f3f4f6;--blue:#0b4fd6;--red:#c40000;--green:#0a7a2f;--yel:#ffc000;--bg:#fff}
+:root{
+  --bg:#f3f4f6;--card:#fff;--ink:#111827;--ink2:#374151;--line:#d1d5db;--line2:#e5e7eb;
+  --navy:#1e3a8a;--navy2:#1d4ed8;--navyBg:#eef2ff;--green:#047857;--greenBg:#ecfdf5;--red:#b91c1c;--redBg:#fef2f2;
+  --r:14px;--shadow:0 1px 2px rgba(17,24,39,.06),0 4px 14px rgba(17,24,39,.05)
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:"Pretendard","맑은 고딕","Malgun Gothic",system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.5}
-header{background:#111;color:#fff;padding:14px 20px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline}
-header h1{margin:0;font-size:21px}
-header .meta{font-size:13.5px;color:#fff}
-nav.tabs{display:flex;gap:0;border-bottom:3px solid #111;padding:0 12px;background:#fff;position:sticky;top:0;z-index:5}
-nav.tabs button{border:2px solid #111;border-bottom:none;background:#e5e7eb;color:#111;font-weight:700;font-size:15px;padding:9px 16px;margin:8px 4px 0 0;cursor:pointer;border-radius:8px 8px 0 0}
-nav.tabs button.on{background:#111;color:#fff}
-main{padding:16px 20px 60px;max-width:1400px;margin:0 auto}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Pretendard Variable",Pretendard,"맑은 고딕","Malgun Gothic",system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1}
+a{color:var(--navy)}
+/* 머리 */
+.top{background:var(--card);border-bottom:1px solid var(--line)}
+.top-in{max-width:1320px;margin:0 auto;padding:18px 24px 0;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.brand{display:flex;gap:12px;align-items:center;padding-bottom:14px}
+.logo{width:42px;height:42px;border-radius:11px;background:var(--navy);display:grid;place-items:center;flex:none}
+.logo svg{width:24px;height:24px}
+.brand h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em}
+.brand .meta{font-size:13.5px;color:var(--ink2);margin-top:2px}
+nav.tabs{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
+nav.tabs button{border:0;background:transparent;color:var(--ink);font:inherit;font-weight:700;font-size:14.5px;padding:8px 16px;border-radius:9px;cursor:pointer}
+nav.tabs button:hover{background:#e5e7eb}
+nav.tabs button.on{background:var(--navy);color:#fff;box-shadow:0 1px 3px rgba(30,58,138,.35)}
+main{padding:22px 24px 120px;max-width:1320px;margin:0 auto}
 section.tab{display:none}section.tab.on{display:block}
-.panel{border:2px solid #111;border-radius:10px;padding:14px 16px;margin-bottom:14px;background:#fff}
-.panel h2{margin:0 0 10px;font-size:17px}
-.row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
-label{font-weight:700}
-input[type=number],input[type=text],select{font-size:15px;padding:6px 8px;border:2px solid #111;border-radius:6px;background:#fff;color:#111}
-input[type=number]{width:110px}
-.big input#nBooks{font-size:22px;width:120px;font-weight:800}
-button.act{font-size:15px;font-weight:800;padding:9px 16px;border-radius:8px;border:2px solid #111;background:#fff;color:#111;cursor:pointer}
-button.act.pri{background:var(--blue);border-color:var(--blue);color:#fff}
-button.act.grn{background:var(--green);border-color:var(--green);color:#fff}
-button.act.red{background:#fff;border-color:var(--red);color:var(--red)}
-button.act:disabled{opacity:.5;cursor:default}
-button.sm{font-size:13px;font-weight:700;padding:3px 8px;border-radius:6px;border:2px solid #111;background:#fff;cursor:pointer;white-space:nowrap}
-button.sm.red{border-color:var(--red);color:var(--red)}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
-.wtable{border-collapse:collapse;width:100%}
-.wtable td{padding:3px 6px;border-bottom:1px solid #999}
-.wtable input{width:64px}
-.wtable td:nth-child(2){white-space:nowrap}
-.note{font-size:13.5px;color:#222}
+/* 카드 */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow)}
+.ph{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.ph .n{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;font-size:13.5px;display:grid;place-items:center;flex:none}
+.ph h2{margin:0;font-size:16.5px;font-weight:800;letter-spacing:-.01em}
+.ph .d{margin-left:auto;font-size:13px;color:var(--ink2)}
+.panel h2{margin:0 0 12px;font-size:16.5px;font-weight:800}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.grid3 .panel{margin-bottom:0}
+.sp16{height:16px}
+/* 입력 */
+.row{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:flex-end}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld>span.lb,label.lb{font-size:13px;font-weight:700;color:var(--ink2)}
+label{font-weight:600}
+.ig{flex:none;display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:10px;background:#fff;height:42px;overflow:hidden}
+.ig:focus-within{border-color:var(--navy2);box-shadow:0 0 0 3px rgba(29,78,216,.15)}
+.ig input{border:0;outline:0;height:100%;padding:0 10px;font:inherit;font-size:15px;color:var(--ink);background:transparent;width:120px}
+.ig .u{padding:0 12px 0 2px;color:var(--ink2);font-weight:600;font-size:14px;white-space:nowrap}
+.ig.hero{height:54px;border-width:2px;border-color:var(--navy)}
+.ig.hero input{font-size:26px;font-weight:800;width:120px;color:var(--navy)}
+.ig.sm{height:36px;border-radius:8px}.ig.sm input{width:58px;text-align:right;padding:0 4px 0 8px}
+input[type=text],select{font:inherit;font-size:15px;height:42px;padding:0 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);outline:0}
+input[type=text]:focus,select:focus{border-color:var(--navy2);box-shadow:0 0 0 3px rgba(29,78,216,.15)}
+input[type=checkbox]{accent-color:var(--navy);width:17px;height:17px;vertical-align:-3px;margin:0 6px 0 0}
+.check{display:flex;align-items:flex-start;gap:2px;padding:6px 0;font-weight:600;cursor:pointer}
+.note{font-size:13.5px;color:var(--ink2)}
+.hint{margin:14px 0 0;padding:10px 14px;background:var(--navyBg);border-radius:10px;font-size:13.5px;color:var(--ink)}
 .warn{color:var(--red);font-weight:700}
 .ok{color:var(--green);font-weight:700}
-.summary{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 10px}
-.summary .box{border:2px solid #111;border-radius:8px;padding:8px 12px;min-width:120px}
-.summary .box b{display:block;font-size:20px}
-.bars{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px}
-.bars span b{font-weight:800}
-table.list{border-collapse:collapse;width:100%;font-size:14px}
-table.list th{background:#111;color:#fff;position:sticky;top:46px;padding:7px 6px;text-align:left;z-index:2;white-space:nowrap}
-table.list td{border-bottom:1px solid #777;padding:6px;vertical-align:top}
-table.list tr.bad td{background:#ffe3e3}
-table.list tr:hover td{background:#f4f7ff}
+hr{border:0;border-top:1px solid var(--line2);margin:14px 0}
+/* 비율 */
+.mix{display:flex;flex-direction:column;gap:10px}
+.mix .it{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line2);border-radius:10px}
+.mix .it .tx{flex:1;font-size:14px}
+.mix .it .tx b{display:block;font-size:14.5px}
+#areaTable{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
+#areaTable .ar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--line2);min-width:0}
+#areaTable .ar .nm{font-weight:700;font-size:14px;white-space:nowrap;line-height:1.25}
+#areaTable .ar .cnt{display:block;font-size:12px;color:var(--navy);font-weight:700;min-height:15px}
+#areaTable .tot{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding-top:6px}
+/* 버튼 */
+button{font-family:inherit}
+button.act{font-size:14.5px;font-weight:700;height:42px;padding:0 16px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+button.act:hover{border-color:var(--ink2);background:#f9fafb}
+button.act.pri{background:var(--navy);border-color:var(--navy);color:#fff}
+button.act.pri:hover{background:#172f73}
+button.act.grn{background:var(--green);border-color:var(--green);color:#fff}
+button.act.grn:hover{background:#065f46}
+button.act:disabled{opacity:.55;cursor:default}
+button.sm{font-size:13px;font-weight:700;height:30px;padding:0 10px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;white-space:nowrap}
+button.sm:hover{border-color:var(--ink2)}
+button.sm.red{border-color:#fca5a5;color:var(--red)}
+button.sm.red:hover{background:var(--redBg);border-color:var(--red)}
+/* 실행 막대 */
+.toolbar{position:sticky;bottom:14px;z-index:20;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:18px 0;padding:10px 12px;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px rgba(17,24,39,.14)}
+.toolbar .sep{width:1px;height:26px;background:var(--line);margin:0 4px}
+.toolbar .status{margin-left:6px}
+#tab-browse .toolbar{position:static;box-shadow:none;justify-content:center;background:transparent;border:0}
+/* 요약 */
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:4px 0 12px}
+.summary .box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;box-shadow:var(--shadow);font-size:13px;font-weight:700;color:var(--ink2)}
+.summary .box b{display:block;font-size:22px;font-weight:800;color:var(--ink);margin-top:2px;letter-spacing:-.01em}
+.summary .box b.warn{color:var(--red)}.summary .box b.ok{color:var(--green)}
+.bars{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;font-size:13px;align-items:center}
+.bars span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-weight:600}
+.bars span b{font-weight:800;color:var(--navy);margin-left:3px}
+.bars span.h{background:transparent;border:0;padding:3px 2px 3px 6px;font-weight:800;color:var(--ink)}
+/* 표 */
+.tablewrap{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:clip}
+table.list{border-collapse:separate;border-spacing:0;width:100%;font-size:14px}
+table.list th{background:#f9fafb;color:var(--ink2);font-size:12.5px;font-weight:800;position:sticky;top:0;padding:10px 10px;text-align:left;z-index:2;white-space:nowrap;border-bottom:1px solid var(--line)}
+table.list td{border-bottom:1px solid var(--line2);padding:10px;vertical-align:top}
+table.list tbody tr:last-child td{border-bottom:0}
+table.list tbody tr:hover td{background:#f8fafc}
+table.list tr.bad td{background:var(--redBg)!important}
 td.num,th.num{text-align:right;white-space:nowrap}
-.t{font-weight:800}
-.s{display:block;font-size:12.5px;color:#333}
-.chip{display:inline-block;border:1.5px solid #111;border-radius:999px;padding:0 7px;margin:1px 3px 1px 0;font-size:12px;white-space:nowrap;background:#fff}
-.chip.g권장{background:#fff4c2}.chip.g신간{background:#d7f5df}.chip.g진로{background:#dfe9ff}.chip.g희망{background:#ffe0f0}
-.chip.dm{background:#ffd6d6;border-color:var(--red)}
-input.qty{width:56px;padding:3px 5px}
-.cover{width:34px;height:48px;object-fit:cover;border:1px solid #999;background:#eee}
-.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+td.idx{color:var(--ink2);font-weight:700;width:40px}
+.t{font-weight:800;color:var(--ink);text-decoration:none}
+.t:hover{color:var(--navy2);text-decoration:underline}
+.s{display:block;font-size:12.5px;color:var(--ink2);margin-top:2px}
+td .sub2{font-size:12.5px;color:var(--ink2)}
+.chip{display:inline-flex;align-items:center;border-radius:999px;padding:1px 8px;margin:2px 4px 2px 0;font-size:12px;font-weight:600;white-space:nowrap;background:#f3f4f6;color:var(--ink);border:1px solid var(--line2)}
+.chip.g권장{background:#fef3c7;border-color:#fcd34d;color:#78350f;font-weight:800}
+.chip.g신간{background:#d1fae5;border-color:#6ee7b7;color:#064e3b;font-weight:800}
+.chip.g진로{background:#dbeafe;border-color:#93c5fd;color:#1e3a8a;font-weight:800}
+.chip.g희망{background:#fce7f3;border-color:#f9a8d4;color:#831843;font-weight:800}
+.chip.dm{background:var(--redBg);border-color:#fca5a5;color:var(--red);font-weight:700}
+input.qty{width:58px;height:32px;border:1.5px solid var(--line);border-radius:8px;padding:0 6px;font:inherit;text-align:right}
+.cover{width:36px;height:52px;object-fit:cover;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.25);background:#eee;display:block}
+.acts{display:flex;gap:6px;justify-content:flex-end}
 .status{font-size:13px;font-weight:700}
-.st-ok{color:var(--green)}.st-bad{color:var(--red)}.st-wait{color:#555}
-.muted{color:#444}
-#searchRes .item{display:flex;gap:10px;align-items:center;border-bottom:1px solid #999;padding:6px 0}
-.doc h3{margin:18px 0 6px;font-size:16.5px}
+.pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:800;white-space:nowrap}
+.st-ok{background:var(--greenBg);color:var(--green)}
+.st-bad{background:var(--redBg);color:var(--red)}
+.st-wait{color:var(--ink2)}
+.toolbar .status.st-ok,.toolbar .status.st-bad{background:none}
+.empty{text-align:center;padding:40px 10px;color:var(--ink2);font-weight:600;background:var(--card);border:1px dashed var(--line);border-radius:var(--r)}
+#searchRes .item{display:flex;gap:12px;align-items:center;border-top:1px solid var(--line2);padding:10px 0}
+#searchRes .item:first-child{border-top:0;margin-top:8px}
+/* 기준 문서 */
+.doc .panel{max-width:980px}
+.doc h3{margin:22px 0 8px;font-size:15.5px;font-weight:800;color:var(--navy)}
 .doc p,.doc li{max-width:900px}
-.doc table{border-collapse:collapse;margin:6px 0}
-.doc td,.doc th{border:1.5px solid #111;padding:5px 9px}
-.doc th{background:#eee}
+.doc li{margin:3px 0}
+.doc table{border-collapse:collapse;margin:6px 0;font-size:14px}
+.doc td,.doc th{border:1px solid var(--line);padding:8px 11px;vertical-align:top;text-align:left}
+.doc th{background:#f9fafb}
+.doc td:first-child,.doc th:first-child{white-space:nowrap;font-weight:700}
 .hide{display:none}
-#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:8px;font-weight:700;display:none;z-index:50;max-width:90vw}
-@media (max-width:760px){main{padding:10px}table.list{font-size:13px}.hide-m{display:none}}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-weight:700;display:none;z-index:50;max-width:90vw;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+@media (max-width:760px){main{padding:14px 12px 120px}.top-in{padding:14px 12px 0}table.list{font-size:13px}.hide-m{display:none}#areaTable{grid-template-columns:1fr}.toolbar{position:static;box-shadow:none}nav.tabs{width:100%}nav.tabs button{flex:1;padding:8px 6px;font-size:13.5px;white-space:nowrap}}
 </style>
 </head>
 <body>
-<header>
-  <h1>웅천고 도서관 구입 목록 도우미</h1>
-  <div class="meta" id="metaLine">자료 불러오는 중…</div>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19.5A2 2 0 0 0 6 21h13"/><path d="M9 7h6M9 11h4"/></svg></div>
+      <div>
+        <h1>웅천고 도서관 구입 목록 도우미</h1>
+        <div class="meta" id="metaLine">자료 불러오는 중…</div>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button data-tab="make" class="on">구입 목록 만들기</button>
+      <button data-tab="browse">후보 전체 보기</button>
+      <button data-tab="rule">선정 기준·절차</button>
+    </nav>
+  </div>
 </header>
-<nav class="tabs">
-  <button data-tab="make" class="on">구입 목록 만들기</button>
-  <button data-tab="browse">후보 전체 보기</button>
-  <button data-tab="rule">선정 기준·절차</button>
-</nav>
 <main>
 <section class="tab on" id="tab-make">
   <div class="panel">
-    <h2>1. 몇 권을 살까요?</h2>
-    <div class="row big">
-      <label for="nBooks">권수</label><input id="nBooks" type="number" min="1" max="2000" value="100"> 권
-      <label for="budget">예산 상한(정가 기준, 선택)</label><input id="budget" type="number" min="0" step="10000" placeholder="예: 1700000" style="width:150px"> 원
-      <label><input type="checkbox" id="fitBudget"> 정가 합계가 예산을 넘지 않게 고르기</label>
+    <div class="ph"><span class="n">1</span><h2>몇 권을 살까요?</h2></div>
+    <div class="row">
+      <div class="fld"><span class="lb">권수</span><span class="ig hero"><input id="nBooks" type="number" min="1" max="2000" value="100"><span class="u">권</span></span></div>
+      <div class="fld"><span class="lb">예산 상한 · 정가 기준(선택)</span><span class="ig"><input id="budget" type="number" min="0" step="10000" placeholder="예: 1700000" style="width:150px"><span class="u">원</span></span></div>
+      <label class="check" style="padding-bottom:10px"><input type="checkbox" id="fitBudget">정가 합계가 예산을 넘지 않게 고르기</label>
     </div>
-    <div class="row" style="margin-top:10px">
-      <label for="year">학년도</label><input id="year" type="number" value="2027" style="width:90px">
-      <label for="round">회차</label><input id="round" type="text" value="1학기 1차" style="width:140px">
-      <span class="note">엑셀 제목: <b id="titlePreview"></b></span>
+    <div class="row" style="margin-top:14px">
+      <div class="fld"><span class="lb">학년도</span><span class="ig"><input id="year" type="number" value="2027" style="width:80px"><span class="u">학년도</span></span></div>
+      <div class="fld"><span class="lb">회차</span><input id="round" type="text" value="1학기 1차" style="width:150px"></div>
+      <div class="fld"><span class="lb">엑셀 제목</span><div style="height:42px;display:flex;align-items:center;font-weight:700" id="titlePreview"></div></div>
     </div>
-    <p class="note" style="margin:8px 0 0">한 해 예산 약 1,500만 원이면 정가 평균 약 1만 7천 원 기준 <b>연 850~900권</b> 정도입니다. 100권은 정가 합계 약 170만 원 안팎입니다. <b>예산은 모두 정가 기준(정가 × 권수)</b>으로 계산하며 할인은 넣지 않습니다.</p>
+    <div class="hint">한 해 예산 약 1,500만 원이면 정가 평균 약 1만 7천 원 기준 <b>연 850~900권</b> 정도이고, 100권은 정가 합계 약 170만 원 안팎입니다. <b>예산은 모두 정가 기준(정가 × 권수)</b>으로 계산하며 할인은 넣지 않습니다.</div>
   </div>
 
   <div class="grid3">
     <div class="panel">
-      <h2>2. 어떤 책을 얼마나</h2>
-      <table class="wtable">
-        <tr><td><span class="chip g권장">권장</span> 청소년 권장도서 중 우리 학교에 없는 책</td><td><input type="number" id="r권장" value="50" min="0" max="100">%</td></tr>
-        <tr><td><span class="chip g신간">신간</span> 2025년 이후 나온 책 중 학교에 맞는 책</td><td><input type="number" id="r신간" value="35" min="0" max="100">%</td></tr>
-        <tr><td><span class="chip g진로">진로</span> 진로·직업 책</td><td><input type="number" id="r진로" value="15" min="0" max="100">%</td></tr>
-      </table>
-      <p class="note" id="ratioNote"></p>
-      <label><input type="checkbox" id="demandFirst" checked> 웅천서가에서 학생들이 글을 쓴 책(도서관에 없는 책) 먼저 넣기</label>
-    </div>
-    <div class="panel">
-      <h2>3. 분야 균형(%)</h2>
-      <table class="wtable" id="areaTable"></table>
-      <p class="note">한 분야로 치우치지 않게 이 비율을 넘지 않도록 고릅니다(운영 계획서: 특정 주제나 분야에 치우치지 않도록).</p>
-    </div>
-    <div class="panel">
-      <h2>4. 거르기</h2>
-      <div class="row"><label for="maxPrice">한 권 정가 상한</label><input id="maxPrice" type="number" value="35000" step="1000" style="width:110px">원</div>
-      <div class="row" style="margin-top:6px"><label for="minYear">권장도서 출간 연도</label><input id="minYear" type="number" value="2012" style="width:90px">년 이후</div>
-      <div class="row" style="margin-top:6px"><label for="maxAuthor">한 지은이 최대</label><input id="maxAuthor" type="number" value="2" min="1" style="width:70px">권</div>
-      <div style="margin-top:6px"><label><input type="checkbox" id="optComic"> 만화(교양만화·그래픽노블) 넣기</label></div>
-      <div><label><input type="checkbox" id="optRelig" checked> 종교·주식투자 책 빼기</label></div>
-      <div><label><input type="checkbox" id="optSeries" checked> 시리즈는 한 권만, 앞 권이 없으면 뒷 권 빼기</label></div>
+      <div class="ph"><span class="n">2</span><h2>어떤 책을 얼마나</h2></div>
+      <div class="mix">
+        <div class="it"><span class="chip g권장">권장</span><div class="tx"><b>청소년 권장도서</b>우리 학교에 없는 책</div><span class="ig sm"><input type="number" id="r권장" value="50" min="0" max="100"><span class="u">%</span></span></div>
+        <div class="it"><span class="chip g신간">신간</span><div class="tx"><b>새로 나온 책</b>2025년 이후, 학교에 맞는 책</div><span class="ig sm"><input type="number" id="r신간" value="35" min="0" max="100"><span class="u">%</span></span></div>
+        <div class="it"><span class="chip g진로">진로</span><div class="tx"><b>진로·직업</b>진로 선택과 직업 세계</div><span class="ig sm"><input type="number" id="r진로" value="15" min="0" max="100"><span class="u">%</span></span></div>
+      </div>
+      <p class="note" id="ratioNote" style="margin:8px 0 0"></p>
       <hr>
-      <div><b>이미 산 목록·구입 예정 목록 빼기</b></div>
-      <div class="row" style="margin-top:4px"><input type="file" id="prevFile" accept=".xlsx,.xls,.csv" multiple><button class="sm red" id="prevClear">비우기</button></div>
-      <div class="note" id="prevInfo"></div>
+      <label class="check"><input type="checkbox" id="demandFirst" checked>웅천서가에서 학생들이 글을 쓴 책(도서관에 없는 책) 먼저 넣기</label>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="n">3</span><h2>분야 균형</h2><span class="d">%를 넘지 않게</span></div>
+      <div id="areaTable"></div>
+      <p class="note" style="margin:10px 0 0">운영 계획서: 특정 주제나 분야에 치우치지 않도록 고릅니다.</p>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="n">4</span><h2>거르기</h2></div>
+      <div class="row" style="gap:12px 16px">
+        <div class="fld"><span class="lb">한 권 정가 상한</span><span class="ig"><input id="maxPrice" type="number" value="35000" step="1000" style="width:100px"><span class="u">원</span></span></div>
+        <div class="fld"><span class="lb">권장도서 출간</span><span class="ig"><input id="minYear" type="number" value="2012" style="width:70px"><span class="u">년 이후</span></span></div>
+        <div class="fld"><span class="lb">한 지은이 최대</span><span class="ig"><input id="maxAuthor" type="number" value="2" min="1" style="width:50px"><span class="u">권</span></span></div>
+      </div>
+      <div style="margin-top:10px">
+        <label class="check"><input type="checkbox" id="optComic">만화(교양만화·그래픽노블) 넣기</label>
+        <label class="check"><input type="checkbox" id="optRelig" checked>종교·주식투자 책 빼기</label>
+        <label class="check"><input type="checkbox" id="optSeries" checked>시리즈는 한 권만, 앞 권이 없으면 뒷 권 빼기</label>
+      </div>
+      <hr>
+      <div style="font-weight:800;margin-bottom:6px">이미 산 목록·구입 예정 목록 빼기</div>
+      <div class="row" style="align-items:center;gap:8px"><input type="file" id="prevFile" accept=".xlsx,.xls,.csv" multiple style="font:inherit;font-size:13.5px;max-width:230px"><button class="sm red" id="prevClear">비우기</button></div>
+      <div class="note" id="prevInfo" style="margin-top:6px"></div>
     </div>
   </div>
 
@@ -134,37 +218,38 @@ input.qty{width:56px;padding:3px 5px}
     <button class="act pri" id="btnMake">목록 만들기</button>
     <button class="act" id="btnShuffle" title="점수가 비슷한 책끼리 섞어 다른 조합을 만듭니다">다른 조합으로</button>
     <button class="act" id="btnCheck">독서로로 다시 확인</button>
+    <span class="sep"></span>
     <button class="act grn" id="btnXlsx">품의용 엑셀 내려받기</button>
     <button class="act" id="btnReview">검토용 엑셀(근거 포함)</button>
     <span class="status" id="checkStatus"></span>
   </div>
 
   <div class="panel" id="addPanel">
-    <h2>책 직접 넣기(교사·학생 희망 도서)</h2>
-    <div class="row"><input type="text" id="q" placeholder="책 제목·지은이·ISBN" style="width:320px"><button class="act" id="btnSearch">알라딘에서 찾기</button><span class="note">찾은 책은 독서로(웅천고)에 있는지 바로 확인합니다.</span></div>
+    <div class="ph"><span class="n">+</span><h2>책 직접 넣기</h2><span class="d">교사·학생 희망 도서</span></div>
+    <div class="row" style="align-items:center;gap:8px"><input type="text" id="q" placeholder="책 제목·지은이·ISBN" style="width:340px;max-width:100%"><button class="act" id="btnSearch">알라딘에서 찾기</button><span class="note">찾은 책은 독서로(웅천고)에 있는지 바로 확인합니다.</span></div>
     <div id="searchRes"></div>
   </div>
 
   <div id="result">
     <div class="summary" id="summary"></div>
     <div class="bars" id="bars"></div>
-    <table class="list" id="listTable"></table>
-    <p class="note" id="emptyNote">‘목록 만들기’를 누르면 여기에 목록이 나옵니다.</p>
+    <div class="tablewrap" id="listWrap"><table class="list" id="listTable"></table></div>
+    <p class="empty" id="emptyNote">‘목록 만들기’를 누르면 여기에 목록이 나옵니다.</p>
   </div>
 </section>
 
 <section class="tab" id="tab-browse">
   <div class="panel">
-    <div class="row">
+    <div class="row" style="align-items:center;gap:10px">
       <input type="text" id="bq" placeholder="제목·지은이·출판사 찾기" style="width:260px">
       <select id="bg"><option value="">묶음 전체</option><option>권장</option><option>신간</option><option>진로</option></select>
       <select id="bf"><option value="">분야 전체</option></select>
       <select id="bs"><option value="sc">점수 높은 순</option><option value="y">최근 출간 순</option><option value="sp">인기(판매) 순</option><option value="pr">정가 낮은 순</option></select>
-      <label><input type="checkbox" id="bDemand"> 학생 글 있는 책만</label>
-      <span class="note" id="bCount"></span>
+      <label class="check"><input type="checkbox" id="bDemand">학생 글 있는 책만</label>
+      <span id="bCount" style="margin-left:auto;font-weight:800;color:var(--navy)"></span>
     </div>
   </div>
-  <table class="list" id="browseTable"></table>
+  <div class="tablewrap"><table class="list" id="browseTable"></table></div>
   <div class="toolbar"><button class="act" id="bMore">더 보기</button></div>
 </section>
 
@@ -259,7 +344,7 @@ function saveSettings() { const o = {}; SET_IDS.forEach(id => { const el = $(id)
 function loadSettings() { let o = {}; try { o = JSON.parse(localStorage.getItem(LS("set")) || "{}"); } catch (e) {} SET_IDS.forEach(id => { if (o[id] == null) return; const el = $(id); if (el.type === "checkbox") el.checked = !!o[id]; else el.value = o[id]; }); loadSettings.o = o; ratioNote(); }
 function buildAreaTable() {
   const o = loadSettings.o || {};
-  $("areaTable").innerHTML = AREAS.map(([a, w]) => `<tr><td>${a}</td><td><input type="number" min="0" max="100" id="w_${a}" value="${o["w_" + a] != null ? o["w_" + a] : w}">%</td><td class="note" id="wc_${a}"></td></tr>`).join("") + `<tr><td><b>합계</b></td><td id="wSum"></td><td><button class="sm" id="wReset">기본값</button></td></tr>`;
+  $("areaTable").innerHTML = AREAS.map(([a, w]) => `<div class="ar"><span class="nm">${a}<span class="cnt" id="wc_${a}"></span></span><span class="ig sm"><input type="number" min="0" max="100" id="w_${a}" value="${o["w_" + a] != null ? o["w_" + a] : w}"><span class="u">%</span></span></div>`).join("") + `<div class="tot"><span>합계 <span id="wSum"></span></span><button class="sm" id="wReset">기본값으로</button></div>`;
   AREAS.forEach(([a]) => $("w_" + a).addEventListener("input", () => { wSum(); saveSettings(); }));
   $("wReset").onclick = () => { AREAS.forEach(([a, w]) => $("w_" + a).value = w); wSum(); saveSettings(); };
   wSum();
@@ -394,7 +479,7 @@ function chips(b) {
 function aladin(b) { return b.id ? `https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=${b.id}` : `https://www.aladin.co.kr/search/wsearchresult.aspx?SearchTarget=Book&SearchWord=${encodeURIComponent(b.t + " " + b.a)}`; }
 function render() {
   const L = state.list.map(x => ({ x, b: BY.get(x.k) })).filter(r => r.b);
-  $("emptyNote").style.display = L.length ? "none" : "";
+  $("emptyNote").style.display = L.length ? "none" : ""; $("listWrap").style.display = L.length ? "" : "none";
   const o = opts();
   const qsum = L.reduce((s, r) => s + (Number(r.x.q) || 1), 0), psum = L.reduce((s, r) => s + r.b.pr * (Number(r.x.q) || 1), 0);
   const bad = L.filter(r => r.x.st === "bad").length, checked = L.filter(r => r.x.st).length;
@@ -402,16 +487,16 @@ function render() {
     + (o.budget ? `<div class="box">예산(정가 기준) ${won(o.budget)}원<b class="${psum > o.budget ? "warn" : "ok"}">${psum > o.budget ? won(psum - o.budget) + "원 넘음" : won(o.budget - psum) + "원 남음"}</b></div>` : "")
     + `<div class="box">독서로 확인<b class="${bad ? "warn" : checked === L.length && L.length ? "ok" : ""}">${checked ? (bad ? `있는 책 ${bad}권` : (checked === L.length ? "모두 없음 ✓" : `${checked}/${L.length}권 확인`)) : "아직 안 함"}</b></div>`;
   const ac = {}, gc = {}; L.forEach(r => { ac[r.b.f] = (ac[r.b.f] || 0) + 1; gc[r.b.g] = (gc[r.b.g] || 0) + 1; });
-  $("bars").innerHTML = (L.length ? "<span><b>묶음</b></span>" + ["권장","신간","진로","희망"].filter(g => gc[g]).map(g => `<span>${g} <b>${gc[g]}</b></span>`).join("") + "<span>|</span><span><b>분야</b></span>" + AREAS.filter(([a]) => ac[a]).map(([a]) => `<span>${a} <b>${ac[a]}</b></span>`).join("") : "");
+  $("bars").innerHTML = (L.length ? "<span class=\"h\">묶음</span>" + ["권장","신간","진로","희망"].filter(g => gc[g]).map(g => `<span>${g}<b>${gc[g]}</b></span>`).join("") + "<span class=\"h\" style=\"margin-left:10px\">분야</span>" + AREAS.filter(([a]) => ac[a]).map(([a]) => `<span>${a}<b>${ac[a]}</b></span>`).join("") : "");
   AREAS.forEach(([a]) => { const el = $("wc_" + a); if (el) el.textContent = ac[a] ? `지금 ${ac[a]}권` : ""; });
   if (!L.length) { $("listTable").innerHTML = ""; return; }
   $("listTable").innerHTML = `<thead><tr><th>순번</th><th class="hide-m"></th><th>도서명</th><th>저자</th><th>출판사</th><th class="num">출간</th><th class="num">정가</th><th>권수</th><th class="hide-m">분야</th><th>근거</th><th>독서로</th><th></th></tr></thead><tbody>` +
     L.map((r, i) => { const b = r.b, x = r.x;
-      const st = x.st === "ok" ? `<span class="status st-ok">없음 ✓</span>` : x.st === "bad" ? `<span class="status st-bad">있음: ${esc(x.stx || "")}</span>` : x.st === "err" ? `<span class="status st-wait">확인 못함</span>` : (b.lib ? `<span class="status st-bad" title="다른 권이 학교에 있음">${esc(b.lib)}</span>` : `<span class="status st-wait">-</span>`);
-      return `<tr class="${x.st === "bad" ? "bad" : ""}"><td class="num">${i + 1}</td><td class="hide-m">${b.cv ? `<img class="cover" loading="lazy" referrerpolicy="no-referrer" src="${esc(b.cv)}" alt="" onerror="this.remove()">` : ""}</td>
-      <td><a class="t" href="${aladin(b)}" target="_blank" rel="noopener">${esc(shown(b.t))}</a>${b.s ? `<span class="s">${esc(b.s)}</span>` : ""}</td><td>${esc(b.a)}</td><td>${esc(b.p)}</td><td class="num">${b.y || ""}</td><td class="num">${won(b.pr)}</td>
+      const st = x.st === "ok" ? `<span class="pill st-ok">없음 ✓</span>` : x.st === "bad" ? `<span class="pill st-bad">있음 ${esc(x.stx || "")}</span>` : x.st === "err" ? `<span class="pill st-wait">확인 못함</span>` : (b.lib ? `<span class="pill st-bad" title="다른 권이 학교에 있음">${esc(b.lib)}</span>` : `<span class="st-wait">–</span>`);
+      return `<tr class="${x.st === "bad" ? "bad" : ""}"><td class="num idx">${i + 1}</td><td class="hide-m">${b.cv ? `<img class="cover" loading="lazy" referrerpolicy="no-referrer" src="${esc(b.cv)}" alt="" onerror="this.remove()">` : ""}</td>
+      <td><a class="t" href="${aladin(b)}" target="_blank" rel="noopener">${esc(shown(b.t))}</a>${b.s ? `<span class="s">${esc(b.s)}</span>` : ""}</td><td>${esc(b.a)}</td><td class="sub2">${esc(b.p)}</td><td class="num">${b.y || ""}</td><td class="num"><b>${won(b.pr)}</b></td>
       <td><input class="qty" type="number" min="1" value="${x.q || 1}" data-i="${i}"></td><td class="hide-m">${esc(b.f)}</td><td>${chips(b)}</td><td>${st}</td>
-      <td><button class="sm" data-rep="${i}">바꾸기</button> <button class="sm red" data-del="${i}" title="이 책을 목록에서 빼고 다음에도 고르지 않음">빼기</button></td></tr>`; }).join("") + "</tbody>";
+      <td><div class="acts"><button class="sm" data-rep="${i}">바꾸기</button><button class="sm red" data-del="${i}" title="이 책을 목록에서 빼고 다음에도 고르지 않음">빼기</button></div></td></tr>`; }).join("") + "</tbody>";
 }
 $("listTable").addEventListener("click", e => { const r = e.target.dataset.rep, d = e.target.dataset.del; if (r != null) replaceAt(+r); if (d != null) removeAt(+d, true); });
 $("listTable").addEventListener("change", e => { if (e.target.classList.contains("qty")) { const i = +e.target.dataset.i; state.list[i].q = Math.max(1, Number(e.target.value) || 1); save(); render(); } });
@@ -457,7 +542,7 @@ async function doSearch() {
     const h = await relay({ a: "hold", items: L.map(x => ({ t: x.t, a: firstAuthor(x.a), isbn: "" })) });
     $("searchRes").innerHTML = L.map((x, i) => { const hh = h.ok ? h.list[i] : null; const have = hh && hh.found && hh.how !== "다른 권";
       return `<div class="item">${x.cover ? `<img class="cover" referrerpolicy="no-referrer" src="${esc(x.cover)}" alt="" onerror="this.remove()">` : ""}<div style="flex:1"><b>${esc(x.t)}</b>${x.sub ? ` <span class="muted">${esc(x.sub)}</span>` : ""}<br><span class="note">${esc(firstAuthor(x.a))} · ${esc(x.p)} · ${esc(x.date)} · 정가 ${won(x.price)}원${x.out ? ' · <span class="warn">절판·품절</span>' : ""}</span></div>
-      <div>${have ? `<span class="status st-bad">학교에 있음 ${esc(hh.callNo)}</span>` : hh && hh.ok ? `<span class="status st-ok">학교에 없음</span>` : ""}</div><button class="sm" data-add="${i}">${have ? "그래도 넣기" : "목록에 넣기"}</button></div>`; }).join("");
+      <div>${have ? `<span class="pill st-bad">학교에 있음 ${esc(hh.callNo)}</span>` : hh && hh.ok ? `<span class="pill st-ok">학교에 없음</span>` : ""}</div><button class="sm" data-add="${i}">${have ? "그래도 넣기" : "목록에 넣기"}</button></div>`; }).join("");
     $("searchRes").querySelectorAll("[data-add]").forEach(btn => btn.onclick = async () => {
       const x = L[+btn.dataset.add]; btn.disabled = true; btn.textContent = "넣는 중…";
       let cats = [], isbn = ""; try { const it = await relay({ a: "item", id: x.id }); if (it.ok && it.item) { cats = (it.item.cats || []).filter(c => !/^추천도서/.test(c)); isbn = it.item.isbn; } } catch (e) {}
@@ -551,8 +636,8 @@ function renderBrowse() {
   L.sort((x, y) => s === "y" ? (y.y - x.y) || (y.sc - x.sc) : s === "sp" ? y.sp - x.sp : s === "pr" ? x.pr - y.pr : y.sc - x.sc);
   $("bCount").textContent = `${won(L.length)}권`;
   $("browseTable").innerHTML = `<thead><tr><th class="num">점수</th><th>도서명</th><th>저자</th><th>출판사</th><th class="num">출간</th><th class="num">정가</th><th>분야</th><th>근거</th><th></th></tr></thead><tbody>` +
-    L.slice(0, bLimit).map(b => `<tr><td class="num">${Math.round(b.sc)}</td><td><a class="t" href="${aladin(b)}" target="_blank" rel="noopener">${esc(shown(b.t))}</a>${b.s ? `<span class="s">${esc(b.s)}</span>` : ""}</td><td>${esc(b.a)}</td><td>${esc(b.p)}</td><td class="num">${b.y || ""}</td><td class="num">${won(b.pr)}</td><td>${esc(b.f)}</td><td>${chips(b)}</td>
-    <td>${inList.has(b.k) ? '<span class="ok">목록에 있음</span>' : `<button class="sm" data-badd="${esc(b.k)}">목록에 넣기</button>`}</td></tr>`).join("") + "</tbody>";
+    L.slice(0, bLimit).map(b => `<tr><td class="num idx">${Math.round(b.sc)}</td><td><a class="t" href="${aladin(b)}" target="_blank" rel="noopener">${esc(shown(b.t))}</a>${b.s ? `<span class="s">${esc(b.s)}</span>` : ""}</td><td>${esc(b.a)}</td><td>${esc(b.p)}</td><td class="num">${b.y || ""}</td><td class="num">${won(b.pr)}</td><td>${esc(b.f)}</td><td>${chips(b)}</td>
+    <td>${inList.has(b.k) ? '<span class="pill st-ok">목록에 있음</span>' : `<button class="sm" data-badd="${esc(b.k)}">목록에 넣기</button>`}</td></tr>`).join("") + "</tbody>";
   $("bMore").style.display = L.length > bLimit ? "" : "none";
 }
 $("browseTable").addEventListener("click", e => { const k = e.target.dataset.badd; if (!k) return; if (!state.list.some(x => x.k === k)) state.list.push({ k, q: 1, pin: 1 }); save(); render(); renderBrowse(); toast("목록 끝에 넣었습니다(목록을 다시 만들어도 남음)."); });
